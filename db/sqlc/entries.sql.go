@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createEntry = `-- name: CreateEntry :one
@@ -20,8 +19,8 @@ RETURNING id, account_id, amount, created_at
 `
 
 type CreateEntryParams struct {
-	AccountID sql.NullInt64 `json:"account_id"`
-	Amount    int64         `json:"amount"`
+	AccountID int64 `json:"account_id"`
+	Amount    int64 `json:"amount"`
 }
 
 func (q *Queries) CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error) {
@@ -40,7 +39,7 @@ const deleteEntry = `-- name: DeleteEntry :exec
 DELETE FROM entries WHERE account_id = $1
 `
 
-func (q *Queries) DeleteEntry(ctx context.Context, accountID sql.NullInt64) error {
+func (q *Queries) DeleteEntry(ctx context.Context, accountID int64) error {
 	_, err := q.db.ExecContext(ctx, deleteEntry, accountID)
 	return err
 }
@@ -50,7 +49,7 @@ SELECT id, account_id, amount, created_at FROM entries
 WHERE account_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetEntry(ctx context.Context, accountID sql.NullInt64) (Entry, error) {
+func (q *Queries) GetEntry(ctx context.Context, accountID int64) (Entry, error) {
 	row := q.db.QueryRowContext(ctx, getEntry, accountID)
 	var i Entry
 	err := row.Scan(
@@ -110,8 +109,8 @@ RETURNING id, account_id, amount, created_at
 `
 
 type UpdateEntryParams struct {
-	AccountID sql.NullInt64 `json:"account_id"`
-	Amount    int64         `json:"amount"`
+	AccountID int64 `json:"account_id"`
+	Amount    int64 `json:"amount"`
 }
 
 func (q *Queries) UpdateEntry(ctx context.Context, arg UpdateEntryParams) (Entry, error) {

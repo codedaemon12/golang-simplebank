@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createTranfer = `-- name: CreateTranfer :one
@@ -22,9 +21,9 @@ RETURNING id, from_account_id, to_account_id, amount, created_at
 `
 
 type CreateTranferParams struct {
-	FromAccountID sql.NullInt64 `json:"from_account_id"`
-	ToAccountID   sql.NullInt64 `json:"to_account_id"`
-	Amount        int64         `json:"amount"`
+	FromAccountID int64 `json:"from_account_id"`
+	ToAccountID   int64 `json:"to_account_id"`
+	Amount        int64 `json:"amount"`
 }
 
 func (q *Queries) CreateTranfer(ctx context.Context, arg CreateTranferParams) (Transfer, error) {
@@ -45,7 +44,7 @@ SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
 WHERE from_account_id = $1 LIMIT 1
 `
 
-func (q *Queries) GetTranfer(ctx context.Context, fromAccountID sql.NullInt64) (Transfer, error) {
+func (q *Queries) GetTranfer(ctx context.Context, fromAccountID int64) (Transfer, error) {
 	row := q.db.QueryRowContext(ctx, getTranfer, fromAccountID)
 	var i Transfer
 	err := row.Scan(
