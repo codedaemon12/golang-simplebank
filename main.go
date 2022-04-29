@@ -4,15 +4,16 @@ import (
 	"database/sql"
 	"gopractice/simplebank/api"
 	db "gopractice/simplebank/db/sqlc"
+	"gopractice/simplebank/util"
 	"log"
 )
 
-const dbDriver = "postgres"
-const dbSource = "postgresql://root:password@localhost:5432/simple_bank?sslmode=disable"
-const serverAddress = "0.0.0.0:8000"
-
 func main() {
-	conn, err := sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config", err)
+	}
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connnec to db : ", err)
 	}
@@ -21,7 +22,7 @@ func main() {
 
 	server := api.NewServer(store)
 
-	err = server.Start(serverAddress)
+	err = server.Start(config.ServerAddress)
 
 	if err != nil {
 		log.Fatal("cannot start server: ", err)
